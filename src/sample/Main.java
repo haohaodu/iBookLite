@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -30,7 +31,6 @@ public class Main extends Application {
     public static Statement statement;
     public static HashMap<Long, Book> bookHashMap;
     public Cart cart;
-
 
     public TextField makeTextField(String name, Integer posX, Integer posY, Integer width, Integer height){
         TextField makeText = new TextField();
@@ -83,32 +83,35 @@ public class Main extends Application {
         cart.add((long) 5123, 3);
         cart.add((long) 4212, 5);
         cart.add((long) 4134, 1);
-        System.out.println("finished ading to cart");
 
         bookHashMap.put((long)5123, new Book((long)5123, "R.L. Stine", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
         bookHashMap.put((long)4212, new Book((long)4212, "R.L. Stine1", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
         bookHashMap.put((long)4134, new Book((long)4134, "R.L. Stine2", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
-    System.out.println("REACHED BOOK PUTTER");
+
         Label cartLabel = makeLabel ("Cart Screen", cartPosX, cartPosY, 200, 10);
-        System.out.println("made a label");
+
         float cartPrice = 0;
-        int elementPosY = 0;
         for(int i = 0; i < cart.size(); i++){
             Book element = bookHashMap.get((long)5123);
-            Label cartElement = makeLabel(String.format("%s\t\t%s\t x %s: \t%s", element.ISBN, element.title, element.inventory, element.inventory*element.inventory), cartPosX,cartPosY+elementPosY+40 ,200,10);
+            Label cartElement = makeLabel(String.format("%s\t\t%s\t x %s: \t%s", element.ISBN, element.title, element.inventory, Float.toString(element.inventory*element.price)), cartPosX,cartPosY+40 ,300,10);
             aPane.getChildren().add(cartElement);
-            elementPosY+=40;
+            cartPosY+=40;
             cartPrice+=element.inventory*element.inventory;
         }
 
-        Label totalPriceLabel = makeLabel(String.format("Total Price is: %s", cartPrice), cartPosX, cartPosY+elementPosY, 200,50);
+        Label totalPriceLabel = makeLabel(String.format("Total Price is: %s", cartPrice), cartPosX, cartPosY+30, 200,50);
+
+        int completionPosY = cartPosY+40;
+        int completionPosX = 10;
+        String orderNum = "1821957251";
+        String trackingNum = "55192582";
+        Label completionLabel = makeLabel (String.format("Confirmation Screen\n\nOrder Number:\t #%s.\n\nTracking Number: %s\n\nYour order is now confirmed.", orderNum, trackingNum), completionPosX, completionPosY, 300, 250);
 
         // login section
 
-        int loginPosY = 250;
+        int loginPosY = 210;
         int loginPosX = 300;
 
-        Label loginTitle = makeLabel("Login and Register Screen", loginPosX, loginPosY-240, 200, 25);
         Label loginLabel = makeLabel("Login Screen", loginPosX, loginPosY-200, 100, 25);
 
         TextField lEmail = makeTextField("Email", loginPosX, loginPosY-160, 175, 25);
@@ -152,11 +155,6 @@ public class Main extends Application {
 
         // completion page
 
-        int completionPosX = 10;
-        int completionPosY = 250;
-        String orderNum = "1821957251";
-        String trackingNum = "55192582";
-        Label completionLabel = makeLabel (String.format("Order Number: #%s.\n\nTracking Number: %s\n\nThis is a confirmation page.", orderNum, trackingNum), completionPosX, completionPosY, 200, 50);
 
         // Add all the components to the window
         aPane.getChildren().addAll(
@@ -165,7 +163,13 @@ public class Main extends Application {
                 billingLabel, billingName, billingAddress, billingCity, billingProvince, billingCountry,
                 shippingLabel, shippingName, shippingAddress, shippingCity, shippingProvince, shippingCountry,
                 automaticShipBill, manualShipBill, completionLabel,
-                totalPriceLabel);
+                cartLabel, totalPriceLabel);
+
+        StackPane rootPane = new StackPane();
+
+        Pane pane1 = new Pane();
+        Pane pane2 = new Pane();
+
         // Primary Stage
         primaryStage.setTitle("User Screen"); // Set title of window
         primaryStage.setScene(new Scene(aPane, 1285,605));
