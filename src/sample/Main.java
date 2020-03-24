@@ -158,7 +158,7 @@ public class Main extends Application {
 
         // Add all the components to the window
         aPane.getChildren().addAll(
-                loginTitle, lPassword, lEmail, loginLabel, submitLoginButton,
+                lPassword, lEmail, loginLabel, submitLoginButton,
                 billingTitle, registration, rEmail, rPassword, rCreditCard, rBilling, rShipping, submitRegistrationButton,
                 billingLabel, billingName, billingAddress, billingCity, billingProvince, billingCountry,
                 shippingLabel, shippingName, shippingAddress, shippingCity, shippingProvince, shippingCountry,
