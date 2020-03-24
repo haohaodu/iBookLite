@@ -1,18 +1,19 @@
 package sample;
 
 public class Book {
-    Long ISBN;
+    long ISBN;
     String author;
     String title;
     String genre;
     String publisher_name;
-    String publisher_cut;
-    Integer price;
+    Integer publisher_cut;
+    Float price;
     Integer num_pages;
     Integer inventory;
     Integer min_inventory;
 
-    public Book(String ISBN, String author, String title, String genre, String publisher_name, String publisher_cut, Integer price, Integer num_pages, Integer inventory, Integer min_inventory){
+
+    public Book(long ISBN, String author, String title, String genre, String publisher_name, Integer publisher_cut, Float price, Integer num_pages, Integer inventory, Integer min_inventory){
         this.ISBN = ISBN;
         this.author = author;
         this.title = title;

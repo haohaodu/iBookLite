@@ -1,5 +1,7 @@
 package sample;
 
+import java.awt.*;
+import java.awt.TextArea;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,11 +11,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 
-
+import javax.swing.*;
 import javax.xml.soap.Text;
 
 public class Main extends Application {
@@ -21,12 +28,22 @@ public class Main extends Application {
     public static HashMap<String,String> userList;
     public static ArrayList<String> userInfo;
     public static Statement statement;
+    public static HashMap<Long, Book> bookHashMap;
+    public Cart cart;
+
 
     public TextField makeTextField(String name, Integer posX, Integer posY, Integer width, Integer height){
         TextField makeText = new TextField();
         makeText.setPromptText(name);
         makeText.relocate(posX, posY);
         makeText.setPrefSize(width, height);
+        return makeText;
+    }
+
+    public TextArea makeTextArea(String name, Integer posX, Integer posY, Integer width, Integer height){
+        TextArea makeText = new TextArea(name);
+        makeText.setLocation(posX, posY);
+        makeText.setSize(width, height);
         return makeText;
     }
 
@@ -51,42 +68,59 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-
+        System.out.println("start program");
         Pane aPane = new Pane();
+        cart = new Cart();
+        bookHashMap = new HashMap<Long,Book>();
 
-        // Create and position the "new item" TextField
-        TextField searchField = makeTextField("", 10, 10, 150, 25);
+        // cart section
 
-        // Create and position the "Search" Button
-        Button searchButton = makeButton("Search", 170, 10, 100, 25);
+        int cartPosY = 10;
+        int cartPosX = 10;
 
-        ListView<String> usersListView = new ListView<String>();
+        // temporary dummy code
 
-        // Get Users List
-        ArrayList<String> users = new ArrayList<String>();
-        for(String key : userList.keySet()) {
-            users.add(key);
+        cart.add((long) 5123, 3);
+        cart.add((long) 4212, 5);
+        cart.add((long) 4134, 1);
+        System.out.println("finished ading to cart");
+
+        bookHashMap.put((long)5123, new Book((long)5123, "R.L. Stine", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
+        bookHashMap.put((long)4212, new Book((long)4212, "R.L. Stine1", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
+        bookHashMap.put((long)4134, new Book((long)4134, "R.L. Stine2", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
+    System.out.println("REACHED BOOK PUTTER");
+        Label cartLabel = makeLabel ("Cart Screen", cartPosX, cartPosY, 200, 10);
+        System.out.println("made a label");
+        float cartPrice = 0;
+        int elementPosY = 0;
+        for(int i = 0; i < cart.size(); i++){
+            Book element = bookHashMap.get((long)5123);
+            Label cartElement = makeLabel(String.format("%s\t\t%s\t x %s: \t%s", element.ISBN, element.title, element.inventory, element.inventory*element.inventory), cartPosX,cartPosY+elementPosY+40 ,200,10);
+            aPane.getChildren().add(cartElement);
+            elementPosY+=40;
+            cartPrice+=element.inventory*element.inventory;
         }
-        usersListView.setItems(FXCollections.observableArrayList(users));
-        usersListView.relocate(10, 45); usersListView.setPrefSize(260, 175);
+
+        Label totalPriceLabel = makeLabel(String.format("Total Price is: %s", cartPrice), cartPosX, cartPosY+elementPosY, 200,50);
 
         // login section
 
-        int loginPosY = 210;
+        int loginPosY = 250;
         int loginPosX = 300;
 
-        Label loginLabel = makeLabel("Label", loginPosX, loginPosY-200, 100, 25);
+        Label loginTitle = makeLabel("Login and Register Screen", loginPosX, loginPosY-240, 200, 25);
+        Label loginLabel = makeLabel("Login Screen", loginPosX, loginPosY-200, 100, 25);
 
         TextField lEmail = makeTextField("Email", loginPosX, loginPosY-160, 175, 25);
         TextField lPassword = makeTextField("Password", loginPosX,  loginPosY-120, 175, 25);
-        Button submitLoginButton = makeButton("Label", loginPosX, loginPosY-80, 80, 25);
+        Button submitLoginButton = makeButton("Login", loginPosX, loginPosY-80, 80, 25);
 
         // registration section
 
         Label registration = makeLabel("Registration", loginPosX, loginPosY-40, 100,25);
 
         TextField rEmail = makeTextField("Email", loginPosX, loginPosY, 75, 25);
-        TextField rCreditCard = makeTextField("Password", loginPosX, loginPosY, 75, 25);
+        TextField rCreditCard = makeTextField("Password", loginPosX+100, loginPosY, 75, 25);
         TextField rPassword = makeTextField("Credit Card Number", loginPosX, loginPosY+40, 175, 25);
         TextField rBilling = makeTextField("Billing Address", loginPosX, loginPosY+80, 175, 25);
         TextField rShipping = makeTextField("Shipping Address", loginPosX, loginPosY+120, 175, 25);
@@ -96,8 +130,9 @@ public class Main extends Application {
         // billing section
 
         int billShipPosX = 500;
-        int billShipPosY = 10;
+        int billShipPosY = 50;
 
+        Label billingTitle = makeLabel("Billing and Shipping Screen", billShipPosX, billShipPosY-40, 200, 25);
         Label billingLabel = makeLabel("Billing Info", billShipPosX, billShipPosY, 200, 25);
         TextField billingName = makeTextField("Name", billShipPosX, billShipPosY+40, 100, 25);
         TextField billingAddress = makeTextField("Address", billShipPosX, billShipPosY+80, 150, 25);
@@ -117,36 +152,25 @@ public class Main extends Application {
 
         // completion page
 
-        int completionPosX = 800;
-        int completionPosY = 10;
+        int completionPosX = 10;
+        int completionPosY = 250;
         String orderNum = "1821957251";
         String trackingNum = "55192582";
-        Label completionLabel = makeLabel (String.format("Order #%s Completed.\nThis is your tracking number: %s", orderNum, trackingNum), completionPosX, completionPosY, 100, 25);
+        Label completionLabel = makeLabel (String.format("Order Number: #%s.\n\nTracking Number: %s\n\nThis is a confirmation page.", orderNum, trackingNum), completionPosX, completionPosY, 200, 50);
 
         // Add all the components to the window
-        aPane.getChildren().addAll(searchField, searchButton,  usersListView,
-                lPassword, lEmail, loginLabel, submitLoginButton,
-                registration, rEmail, rPassword, rCreditCard, rBilling, rShipping, submitRegistrationButton,
+        aPane.getChildren().addAll(
+                loginTitle, lPassword, lEmail, loginLabel, submitLoginButton,
+                billingTitle, registration, rEmail, rPassword, rCreditCard, rBilling, rShipping, submitRegistrationButton,
                 billingLabel, billingName, billingAddress, billingCity, billingProvince, billingCountry,
                 shippingLabel, shippingName, shippingAddress, shippingCity, shippingProvince, shippingCountry,
-                automaticShipBill, manualShipBill);
-
+                automaticShipBill, manualShipBill, completionLabel,
+                totalPriceLabel);
         // Primary Stage
         primaryStage.setTitle("User Screen"); // Set title of window
-        primaryStage.setScene(new Scene(aPane, 1285,405));
+        primaryStage.setScene(new Scene(aPane, 1285,605));
         primaryStage.show();
 
-        searchButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String newItem = searchField.getText();
-                if(!users.contains(newItem)) {
-                    users.add(newItem);
-                    usersListView.setItems(FXCollections.observableArrayList(users));
-                    primaryStage.show();
-                }
-            }
-        });
 
         submitRegistrationButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
