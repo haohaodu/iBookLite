@@ -1,36 +1,41 @@
+
 package sample;
 
 public class Book {
-    long ISBN;
-    String author;
-    String title;
-    String genre;
-    String publisher_name;
-    Integer publisher_cut;
-    Float price;
-    Integer num_pages;
-    Integer inventory;
-    Integer min_inventory;
+    protected long ISBN;
+    protected String title;
+    protected String author;
+    protected String genre;
+    protected String publisher_name;
+    protected float publisher_cut;
+    protected int pages;
+    protected float price;
+    protected int inventory;
+    protected int min_inventory;
 
+    public Book() {
 
-    public Book(long ISBN, String author, String title, String genre, String publisher_name, Integer publisher_cut, Float price, Integer num_pages, Integer inventory, Integer min_inventory){
-        this.ISBN = ISBN;
-        this.author = author;
-        this.title = title;
-        this.genre = genre;
-        this.publisher_name = publisher_name;
-        this.publisher_cut = publisher_cut;
-        this.price = price;
-        this.num_pages = num_pages;
-        this.inventory = inventory;
-        this.min_inventory = min_inventory;
     }
 
-    public void addQuantity(Integer quantity){
-        this.inventory+=quantity;
+    public Book (long ISB, String a, String t, String g, String pn, float pc, float p, int num_pages, int inv, int min_inv) {
+        ISBN = ISB;
+        author = a;
+        title = t;
+        genre = g;
+        publisher_name = pn;
+        publisher_cut = pc;
+        price = p;
+        pages = num_pages;
+        inventory = inv;
+        min_inventory = min_inv;
     }
 
-    public void removeQuantity(Integer quantity){
-        this.inventory-=quantity;
+    public long getISBN() {
+        return ISBN;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
 }

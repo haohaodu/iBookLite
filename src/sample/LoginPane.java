@@ -20,17 +20,23 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 
-public class LoginPane extends Application{
+public class LoginPane extends Pane{
     public static HashMap<Long, Book> bookHashMap = new HashMap<Long,Book>();
     public Cart cart = new Cart();
 
-    public static void main(String[] args) {
+    private Stage primaryStage;
+    private Pane LoginPane;
 
-        launch(args);
+    public LoginPane(Stage stage) {
+        primaryStage = stage;
+        LoginPane = createLoginPane();
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
+    public Pane getLoginPane() {
+        return LoginPane;
+    }
+
+    public Pane createLoginPane(){
         // cart section
         int cartPosY = 10;
         int cartPosX = 10;
@@ -58,10 +64,7 @@ public class LoginPane extends Application{
 
         loginPane.getChildren().addAll(
                 cartLabel);
-        // Primary Stage
-        primaryStage.setTitle("User Screen"); // Set title of window
-        primaryStage.setScene(new Scene(loginPane, 1285,605));
-        primaryStage.show();
+        return loginPane;
     }
     public TextField makeTextField(String name, Integer posX, Integer posY, Integer width, Integer height){
         TextField makeText = new TextField();

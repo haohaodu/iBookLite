@@ -84,9 +84,10 @@ public class Main extends Application {
         cart.add((long) 4212, 5);
         cart.add((long) 4134, 1);
 
-        bookHashMap.put((long)5123, new Book((long)5123, "R.L. Stine", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
-        bookHashMap.put((long)4212, new Book((long)4212, "R.L. Stine1", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
-        bookHashMap.put((long)4134, new Book((long)4134, "R.L. Stine2", "GooseBumps", "Horror", "Scholastic", 70, (float)199.99, 346, 50, 10));
+        bookHashMap.put((long)5123, new Book((long)5123, "R.L. Stine", "GooseBumps", "Horror", "Scholastic", (float)70, (float)199.99, 346, 50, 10));
+        bookHashMap.put((long)4212, new Book((long)4212, "R.L. Stine1", "GooseBumps", "Horror", "Scholastic", (float)70, (float)199.99, 346, 50, 10));
+        bookHashMap.put((long)4134, new Book((long)4134, "R.L. Stine2", "GooseBumps", "Horror", "Scholastic", (float)70, (float)199.99, 346, 50, 10));
+        //public Book (long ISB, String a, String t, String g, String pn, float pc, float p, int num_pages, int inv) {
 
         Label cartLabel = makeLabel ("Cart Screen", cartPosX, cartPosY, 200, 10);
 
@@ -117,6 +118,10 @@ public class Main extends Application {
         TextField lEmail = makeTextField("Email", loginPosX, loginPosY-160, 175, 25);
         TextField lPassword = makeTextField("Password", loginPosX,  loginPosY-120, 175, 25);
         Button submitLoginButton = makeButton("Login", loginPosX, loginPosY-80, 80, 25);
+
+
+
+
 
         // registration section
 
@@ -183,6 +188,29 @@ public class Main extends Application {
                     try (Statement s = connection.createStatement()) {
                         s.executeUpdate(String.format("INSERT INTO users VALUES ( 'userNibboDodddle' ,  '%s' , '%s' , '%s' , '%s' )", rEmail.getText(),  rPassword.getText(), rCreditCard.getText(),rBilling.getText(),rShipping.getText() ));
                         getUserList();
+                    }
+                }
+                catch (Exception e){
+                    System.out.println("Outside Error: " + e);
+                }
+            }
+        });
+
+        submitLoginButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "wallBANG666!")) {
+                    try (Statement s = connection.createStatement()) {
+                        boolean flag = false;
+                        ResultSet resultSet = s.executeQuery("SELECT * FROM users");
+                        while (resultSet.next()) {
+                            String email = resultSet.getString("user_email");
+                            String password = resultSet.getString("password");
+                            if((lEmail.getText()).equals(email) && (lPassword.getText()).equals(password)){
+                                flag = true;
+                            }
+                        }
+                        System.out.println(flag);
                     }
                 }
                 catch (Exception e){
