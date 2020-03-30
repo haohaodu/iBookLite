@@ -101,6 +101,7 @@ public class Main extends Application {
         }
 
         Label totalPriceLabel = makeLabel(String.format("Total Price is: %s", cartPrice), cartPosX, cartPosY+30, 200,50);
+        Button checkoutButton = makeButton("Checkout Now!", cartPosX, cartPosY+40, 200, 50);
 
         int completionPosY = cartPosY+40;
         int completionPosX = 10;
@@ -118,9 +119,6 @@ public class Main extends Application {
         TextField lEmail = makeTextField("Email", loginPosX, loginPosY-160, 175, 25);
         TextField lPassword = makeTextField("Password", loginPosX,  loginPosY-120, 175, 25);
         Button submitLoginButton = makeButton("Login", loginPosX, loginPosY-80, 80, 25);
-
-
-
 
 
         // registration section
@@ -168,7 +166,7 @@ public class Main extends Application {
                 billingLabel, billingName, billingAddress, billingCity, billingProvince, billingCountry,
                 shippingLabel, shippingName, shippingAddress, shippingCity, shippingProvince, shippingCountry,
                 automaticShipBill, manualShipBill, completionLabel,
-                cartLabel, totalPriceLabel);
+                cartLabel, totalPriceLabel, checkoutButton);
 
         StackPane rootPane = new StackPane();
 
@@ -197,6 +195,29 @@ public class Main extends Application {
         });
 
         submitLoginButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "wallBANG666!")) {
+                    try (Statement s = connection.createStatement()) {
+                        boolean flag = false;
+                        ResultSet resultSet = s.executeQuery("SELECT * FROM users");
+                        while (resultSet.next()) {
+                            String email = resultSet.getString("user_email");
+                            String password = resultSet.getString("password");
+                            if((lEmail.getText()).equals(email) && (lPassword.getText()).equals(password)){
+                                flag = true;
+                            }
+                        }
+                        System.out.println(flag);
+                    }
+                }
+                catch (Exception e){
+                    System.out.println("Outside Error: " + e);
+                }
+            }
+        });
+
+        automaticShipBill.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "wallBANG666!")) {
