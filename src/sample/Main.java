@@ -120,7 +120,6 @@ public class Main extends Application {
         TextField lPassword = makeTextField("Password", loginPosX,  loginPosY-120, 175, 25);
         Button submitLoginButton = makeButton("Login", loginPosX, loginPosY-80, 80, 25);
 
-
         // registration section
 
         Label registration = makeLabel("Registration", loginPosX, loginPosY-40, 100,25);
@@ -136,9 +135,10 @@ public class Main extends Application {
         // billing section
 
         int billShipPosX = 500;
-        int billShipPosY = 50;
+        int billShipPosY = 90;
 
-        Label billingTitle = makeLabel("Billing and Shipping Screen", billShipPosX, billShipPosY-40, 200, 25);
+        Label billingTitle = makeLabel("Billing and Shipping Screen", billShipPosX, billShipPosY-80, 200, 25);
+        Button automaticShipBill = makeButton("Use Information on File", billShipPosX,  billShipPosY-40, 150, 25);
         Label billingLabel = makeLabel("Billing Info", billShipPosX, billShipPosY, 200, 25);
         TextField billingName = makeTextField("Name", billShipPosX, billShipPosY+40, 100, 25);
         TextField billingAddress = makeTextField("Address", billShipPosX, billShipPosY+80, 150, 25);
@@ -153,9 +153,8 @@ public class Main extends Application {
         TextField shippingProvince = makeTextField("Province", billShipPosX+175, billShipPosY+160, 150, 25);
         TextField shippingCountry = makeTextField("Country", billShipPosX+175, billShipPosY+200, 150, 25);
 
-        Button automaticShipBill = makeButton("Use Information on File", billShipPosX,  billShipPosY+240, 150, 25);
-        Button manualShipBill = makeButton("Use Entered Information", billShipPosX, billShipPosY+280, 150, 25);
-
+        Button manualShipBill = makeButton("Use Entered Information", billShipPosX, billShipPosY+240, 150, 25);
+        Button confirmOrderBill = makeButton("CHECKOUT NOW", billShipPosX, billShipPosY+280, 150,25);
         // completion page
 
 
@@ -165,7 +164,7 @@ public class Main extends Application {
                 billingTitle, registration, rEmail, rPassword, rCreditCard, rBilling, rShipping, submitRegistrationButton,
                 billingLabel, billingName, billingAddress, billingCity, billingProvince, billingCountry,
                 shippingLabel, shippingName, shippingAddress, shippingCity, shippingProvince, shippingCountry,
-                automaticShipBill, manualShipBill, completionLabel,
+                automaticShipBill, manualShipBill, completionLabel, confirmOrderBill,
                 cartLabel, totalPriceLabel, checkoutButton);
 
         StackPane rootPane = new StackPane();
