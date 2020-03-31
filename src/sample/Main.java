@@ -105,9 +105,9 @@ public class Main extends Application {
         // temporary dummy code
 
 
-        cart.add(isbn1, 3);
-        cart.add(isbn2, 5);
-        cart.add(isbn3, 1);
+        cart.add(isbn1, 999);
+        cart.add(isbn2, 998);
+        cart.add(isbn3,  997);
 
         bookHashMap.put((long)5123, new Book((long)5123, "R.L. Stine", "GooseBumps", "Horror", "Scholastic", (float)70, (float)199.99, 346, 50, 10));
         bookHashMap.put((long)4212, new Book((long)4212, "R.L. Stine1", "GooseBumps", "Horror", "Scholastic", (float)70, (float)199.99, 346, 50, 10));
@@ -139,8 +139,8 @@ public class Main extends Application {
         Label registration = makeLabel("Registration", loginPosX, loginPosY-40, 100,25);
 
         TextField rEmail = makeTextField("Email", loginPosX, loginPosY, 75, 25);
-        TextField rCreditCard = makeTextField("Password", loginPosX+100, loginPosY, 75, 25);
-        TextField rPassword = makeTextField("Credit Card Number", loginPosX, loginPosY+40, 175, 25);
+        TextField rPassword = makeTextField("Password", loginPosX+100, loginPosY, 75, 25);
+        TextField rCreditCard = makeTextField("Credit Card Number", loginPosX, loginPosY+40, 175, 25);
         TextField rBilling = makeTextField("Billing Address", loginPosX, loginPosY+80, 175, 25);
 
         String payMethods[] = { "Paypal", "VISA", "MasterCard", "American Express" };
@@ -209,8 +209,8 @@ public class Main extends Application {
             public void handle(ActionEvent event) {
                 try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "wallBANG666!")) {
                     try (Statement s = connection.createStatement()) {
-                        s.executeUpdate(String.format("INSERT INTO users VALUES ( 'User' ,  '%s' , '%s' , '%s' , '%s' )", rEmail.getText(),  rPassword.getText(), rCreditCard.getText(),
-                                rBilling.getText() + " " + rPaymentMethod.getValue().toString() + " " + rExpDate.getText(),rShipping.getText() ));
+                        s.executeUpdate(String.format("INSERT INTO users VALUES ( 'User' ,  '%s' , '%s' , '%s' , '%s', '%s', '%s' )", rEmail.getText(),  rPassword.getText(), rCreditCard.getText(),
+                                rBilling.getText(), rPaymentMethod.getValue().toString(), rExpDate.getText(),rShipping.getText() ));
                         getUserList();
                     }
                 }
@@ -253,7 +253,7 @@ public class Main extends Application {
                         if(checkoutOptions.getValue().toString().equals(checkoutOps[1])) {
                             System.out.println(" 1a selected ");
                             for (Map.Entry<Long, Integer> c : cart.getCart().entrySet()) {
-                                s.executeUpdate(String.format("INSERT INTO orders VALUES (  '%s' , %s , '%s' , '%s', '%s', '%s', '%s', '%s', '%s' )",
+                                s.executeUpdate(String.format("INSERT INTO orders VALUES (  '%s' , '%s' , '%s' , '%s', '%s', '%s', '%s', '%s', '%s' )",
                                         orderNum, c.getKey(), cart.getUserEmail(), c.getValue(), dtf.format(now), cart.getCartTotal(), defaultFactoryLocation,
                                         billingName.getText() + billingAddress.getText() + billingCity.getText() + billingProvince.getText() + billingCountry.getText(),
                                         shippingName.getText() + shippingAddress.getText() + shippingCity.getText() + shippingProvince.getText() + shippingCountry.getText()
@@ -277,7 +277,7 @@ public class Main extends Application {
                                 }
                             }
                             for (Map.Entry<Long, Integer> c : cart.getCart().entrySet()) {
-                                s.executeUpdate(String.format("INSERT INTO orders VALUES (  '%s' , %s , '%s' , '%s', '%s', '%s', '%s', '%s', '%s' )",
+                                s.executeUpdate(String.format("INSERT INTO orders VALUES (  '%s' , %s , '%s' , '%d', '%s', '%d', '%s', '%s', '%s' )",
                                         orderNum, c.getKey(), cart.getUserEmail(), c.getValue(), dtf.format(now), cart.getCartTotal(), defaultFactoryLocation,
                                         billing, shipping
                                 ));

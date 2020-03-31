@@ -12,13 +12,14 @@ public class Cart {
     HashMap<Long, Integer> storage;
 
     public Cart(){
-        userEmail = "";
+        userEmail = "hdu2899@gmail.com";
         storage = new HashMap<>();
     }
 
-    public int getCartTotal(){
-        int calculation = 0;
+    public Integer getCartTotal(){
+        Integer calculation = 0;
 
+        /*
         try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "wallBANG666!")) {
             try (Statement s = connection.createStatement()) {
                 for (Map.Entry<Long, Integer> c : storage.entrySet()) {
@@ -35,7 +36,9 @@ public class Cart {
         }
         catch (Exception e){
             System.out.println("Outside Error: " + e);
-        }
+        }*/
+
+        calculation+=999;
 
         return calculation;
     }
