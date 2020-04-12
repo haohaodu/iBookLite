@@ -12,37 +12,9 @@ public class Cart {
     HashMap<Long, Integer> storage;
 
     public Cart(){
-        userEmail = "hdu2899@gmail.com";
+        userEmail = "";
         storage = new HashMap<>();
     }
-
-    public Integer getCartTotal(){
-        Integer calculation = 0;
-
-        /*
-        try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "wallBANG666!")) {
-            try (Statement s = connection.createStatement()) {
-                for (Map.Entry<Long, Integer> c : storage.entrySet()) {
-                    ResultSet resultSet = s.executeQuery("SELECT * FROM book");
-                    while (resultSet.next()) {
-                        String isbn = resultSet.getString("isbn");
-                        int price = Integer.parseInt(resultSet.getString("price"));
-                        if((c.getKey().toString()).equals(isbn)){
-                            calculation+=price;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println("Outside Error: " + e);
-        }*/
-
-        calculation+=999;
-
-        return calculation;
-    }
-
 
     public String getUserEmail() {
         return userEmail;
@@ -54,6 +26,26 @@ public class Cart {
 
     public void add(Long ISBN, Integer quantity){
         storage.put(ISBN, quantity);
+    }
+
+    public String getBookTotal(String ISBN13, int quantity){
+        Float total = 0.00f;
+        try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "sS043250448")) {
+            try (Statement s = connection.createStatement()) {
+                ResultSet resultSet = s.executeQuery(String.format("SELECT * FROM book WHERE book.ISBN13 = %s", ISBN13));
+                while (resultSet.next()) {
+                    float price = Float.parseFloat(resultSet.getString("price"));
+                    total = price * quantity*100;
+                    int subtotal = Math.round(total);
+                    total = (float) subtotal/100;
+                    break;
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("Outside Error: " + e);
+        }
+        return total.toString();
     }
 
     public void removeAll(){

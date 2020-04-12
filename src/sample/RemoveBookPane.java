@@ -6,9 +6,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -16,29 +16,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BookSearchPane extends Pane {
+public class RemoveBookPane {
     protected static HashMap<String, Book> bookList;
     private static Statement statement;
     private Stage primaryStage;
-    private Pane bookSearchPane;
     private Book selectedBook;
-    private Cart orderCart;
     private GridPane outerGridPane;
     public ListView<String> bookListView;
+    private Pane removeBookPane;
 
-    public BookSearchPane(Stage stage, GridPane outerGrid, Cart cart) {
+    public RemoveBookPane(Stage stage, GridPane outerGrid) {
         primaryStage = stage;
-        orderCart = cart;
         outerGridPane = outerGrid;
         getBookList();
-        bookSearchPane = createBookSearchPane();
+        removeBookPane = createAddBookPane();
     }
 
-    public Pane getBookSearchPane() {
-        return bookSearchPane;
+    public Pane getRemoveBookPane() {
+        return removeBookPane;
     }
 
-    public Pane createBookSearchPane() {
+    public Pane createAddBookPane() {
         Pane rightPane = new Pane();
         // Book Search
         TextField searchField = makeTextField("Search for Book", 10, 10, 300, 25);
@@ -55,13 +53,9 @@ public class BookSearchPane extends Pane {
         Text quantityLabel = new Text("Quantity:");
         quantityLabel.setFont(Font.font("Arial", FontWeight.BOLD,12));
 
-        // Quantity TextField
-        TextField qtyField = new TextField();
-        qtyField.setPrefSize(100, 25);
-
-        // Add to Cart Button
-        Button addToCartButton = new Button("Add to Cart");
-        addToCartButton.setPrefSize(130, 25);
+        // Remove Book Button
+        Button removeButton = new Button("Remove Book");
+        removeButton.setPrefSize(130, 25);
 
         // View Cart Button
         Button viewCartButton = new Button("View Cart");
@@ -73,13 +67,12 @@ public class BookSearchPane extends Pane {
         checkoutButton.setPrefSize(130, 25);
 
         // Warning label
-        Label warningLabel = makeLabel("Not enough inventory!", 90, -50, 200,25);
+        Label warningLabel = makeLabel("Book Removed", 90, -50, 300,25);
         warningLabel.setFont(new Font("Arial", 16));
 
         // Position Components
         quantityLabel.relocate(320, -50);
-        qtyField.relocate(320, -50);
-        addToCartButton.relocate(320, -50);
+        removeButton.relocate(320, -50);
         viewCartButton.relocate(320,-50);
         checkoutButton.relocate(320, -50);
 
@@ -94,9 +87,8 @@ public class BookSearchPane extends Pane {
                 bookListView,
                 searchButton,
                 selectBookButton,
-                addToCartButton,
+                removeButton,
                 quantityLabel,
-                qtyField,
                 viewCartButton,
                 warningLabel,
                 checkoutButton);
@@ -119,10 +111,9 @@ public class BookSearchPane extends Pane {
                         searchList = searchByISBN(searchString);
                     }
                     selectBookButton.setDisable(false);
-                    addToCartButton.setDisable(true);
+                    removeButton.setDisable(true);
                     quantityLabel.relocate(320, -50);
-                    qtyField.relocate(320, -50);
-                    addToCartButton.relocate(320, -50);
+                    removeButton.relocate(320, -50);
                 }
                 bookListView.setItems(FXCollections.observableArrayList(searchList));
                 primaryStage.show();
@@ -142,24 +133,20 @@ public class BookSearchPane extends Pane {
                     selectedBook = bookList.get(selectedBookTitle);
                     // Disable Select Book Button
                     selectBookButton.setDisable(true);
-                    addToCartButton.setDisable(false);
 
-                    // Enable Add to Cart
-                    quantityLabel.relocate(320, 130);
-                    qtyField.relocate(320, 145);
-                    addToCartButton.relocate(320, 180);
+                    // Enable Remove Book
+                    removeButton.setDisable(false);
+                    removeButton.relocate(320, 130);
                 }
 
                 if(!selectedBookTitle.equals("")) {
-                    // Format Book Price to 2 Decimal Places
-                    String bookPrice = String.format("%.2f", selectedBook.price);
                     ObservableList<String> bookDetails = FXCollections.observableArrayList (
                             "ISBN: " + + selectedBook.ISBN13,
                             "Title: " + selectedBook.title,
                             "Author: " + selectedBook.author,
                             "Genre: " + selectedBook.genre,
                             "Publisher: " + selectedBook.publisher_name,
-                            "Price: $" + bookPrice,
+                            "Price: $" + selectedBook.price,
                             "Number of Pages: " + selectedBook.pages,
                             "Inventory: " + selectedBook.inventory
                     );
@@ -170,93 +157,61 @@ public class BookSearchPane extends Pane {
             }
         });
 
-        // Add to Cart
-        addToCartButton.setOnAction(new EventHandler<ActionEvent>() {
+        removeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // Add Book to Cart if Quantity Field is not empty
-                if(!qtyField.getText().isEmpty() && isNumeric(qtyField.getText())) {
-                    int quantity = Integer.parseInt(qtyField.getText());
-                    int inventory = selectedBook.inventory;
-                    if(quantity > inventory) {
-                        // Warning Message: Not enough inventory!
-                        warningLabel.relocate(90, 260);
-                    } else {
-                        warningLabel.relocate(90, -50);
-                        System.out.println("Added to Cart");
-                        orderCart.add(selectedBook.ISBN13, Integer.parseInt(qtyField.getText()));
-                        ObservableList<String> cartDetails = FXCollections.observableArrayList (
-                                selectedBook.title,
-                                "Quantity: " + qtyField.getText() + " Added to Cart");
-                        bookListView.setItems(cartDetails);
-                        addToCartButton.setDisable(true);
-                        qtyField.setText("");
-                        viewCartButton.relocate(320,210);
-                        checkoutButton.relocate(320, 240);
-                    }
-                }
-
-                // Refresh Screen
-                primaryStage.show();
-            }
-        });
-
-        // View Cart Button
-        viewCartButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("View Cart Button clicked");
-
-                HashMap<Long, Integer> bookCart = orderCart.getCart();
-                HashMap<String, Integer> finalCart = new HashMap<String, Integer>();
-                for (long ISBN13 : bookCart.keySet()) {
-                    int quantity = bookCart.get(ISBN13);
-                    ArrayList<String> bookTitles = searchByISBN(ISBN13 + "");
-                    System.out.println(bookTitles);
-                    if(!bookTitles.isEmpty()) {
-                        finalCart.put(bookTitles.get(0), quantity);
-                    }
-                }
-
-                // Print out Final Cart
-                System.out.println("Final Cart");
-                ArrayList<String> finalCartDetails = new ArrayList<String>();
-                if(!finalCart.isEmpty()) {
-                    for (String item : finalCart.keySet()) {
-                        int quantity = finalCart.get(item);
-                        if(bookList.containsKey(item)) {
-                            Book selectedBook = bookList.get(item);
-                            finalCartDetails.add(item);
-                            float finalBookPrice = selectedBook.price*quantity;
-                            String stringBookPrice = String.format("%.2f", finalBookPrice);
-                            finalCartDetails.add("Quantity: " + quantity + " | Price: $" + stringBookPrice);
+                System.out.println("Remove Book Button Click");
+                String ISBN13 = selectedBook.ISBN13 + "";
+                if(!ISBN13.isEmpty()) {
+                    System.out.println("Selected Book ISBN: " + ISBN13);
+                    try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "sS043250448")) {
+                        try (Statement s = connection.createStatement()) {
+                            s.executeUpdate(String.format("DELETE FROM book WHERE book.ISBN13 = '%s';",ISBN13));
+                            warningLabel.setText("Selected book has been removed.");
+                            warningLabel.relocate(30,260);
+                            removeButton.setDisable(true);
                         }
                     }
+                    catch (Exception e){
+                        System.out.println("Remove Book Error: " + e);
+                    }
                 }
 
-                ObservableList<String> cartDetails = FXCollections.observableArrayList (finalCartDetails);
-                bookListView.setItems(cartDetails);
-
                 // Refresh Screen
                 primaryStage.show();
             }
         });
-
-        // Checkout Button
-        checkoutButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Checkout Button Click");
-                rightPane.getChildren().clear();
-                // System.out.println(orderCart);
-                Pane loginPane = new LoginPane(primaryStage, outerGridPane, orderCart).getLoginPane();
-                outerGridPane.add(loginPane, 1, 0);
-                // Refresh Screen
-                primaryStage.show();
-            }
-        });
-
         return rightPane;
+    }
+
+    public TextField makeTextField(String name, Integer posX, Integer posY, Integer width, Integer height){
+        TextField makeText = new TextField();
+        makeText.setPromptText(name);
+        makeText.relocate(posX, posY);
+        makeText.setPrefSize(width, height);
+        return makeText;
+    }
+
+    public javafx.scene.control.Label makeLabel(String name, Integer posX, Integer posY, Integer width, Integer height){
+        javafx.scene.control.Label label = new javafx.scene.control.Label(name);
+        label.relocate(posX, posY);
+        label.setPrefSize(width, height);
+        return label;
+    }
+
+    public javafx.scene.control.Button makeButton(String name, Integer posX, Integer posY, Integer width, Integer height){
+        javafx.scene.control.Button button = new javafx.scene.control.Button(name);
+        button.relocate(posX, posY);
+        button.setPrefSize(width, height);
+        return button;
+    }
+
+    public ComboBox makeComboBox(String[] lis, Integer posX, Integer posY, Integer width, Integer height){
+        ComboBox combo_box = new ComboBox(FXCollections.observableArrayList(lis));
+        combo_box.getSelectionModel().selectFirst();
+        combo_box.relocate(posX, posY);
+        combo_box.setPrefSize(width,height);
+        return combo_box;
     }
 
     public static void getBookList() {
@@ -286,25 +241,6 @@ public class BookSearchPane extends Pane {
         catch(SQLException error) {
             System.out.println("Could not create connection." + error);
         }
-    }
-
-    private static ArrayList<String> searchButton(String title) {
-        ArrayList<String> searchList = new ArrayList<String>();
-        String searchString = "'%" + title.toLowerCase().replace("'", "''") + "%'";
-        try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "sS043250448"))
-        {
-            try (Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM book WHERE lower(title) like " + searchString + ";");
-                while (resultSet.next()) {
-                    String bookTitle = resultSet.getString("title");
-                    searchList.add(bookTitle);
-                }
-            }
-        }
-        catch(SQLException error) {
-            System.out.println("Could not create connection." + error);
-        }
-        return searchList;
     }
 
     private static ArrayList<String> searchByGenre(String genre) {
@@ -364,46 +300,22 @@ public class BookSearchPane extends Pane {
         return searchList;
     }
 
-    // Check if Quantity is Numeric
-    private static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
+    private static ArrayList<String> searchButton(String title) {
+        ArrayList<String> searchList = new ArrayList<String>();
+        String searchString = "'%" + title.toLowerCase().replace("'", "''") + "%'";
+        try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "sS043250448"))
+        {
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM book WHERE lower(title) like " + searchString + ";");
+                while (resultSet.next()) {
+                    String bookTitle = resultSet.getString("title");
+                    searchList.add(bookTitle);
+                }
+            }
         }
-        try {
-            Integer.parseInt(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
+        catch(SQLException error) {
+            System.out.println("Could not create connection." + error);
         }
-        return true;
-    }
-
-    public TextField makeTextField(String name, Integer posX, Integer posY, Integer width, Integer height){
-        TextField makeText = new TextField();
-        makeText.setPromptText(name);
-        makeText.relocate(posX, posY);
-        makeText.setPrefSize(width, height);
-        return makeText;
-    }
-
-    public Button makeButton(String name, Integer posX, Integer posY, Integer width, Integer height){
-        javafx.scene.control.Button button = new javafx.scene.control.Button(name);
-        button.relocate(posX, posY);
-        button.setPrefSize(width, height);
-        return button;
-    }
-
-    public Label makeLabel(String name, Integer posX, Integer posY, Integer width, Integer height){
-        Label label = new Label(name);
-        label.relocate(posX, posY);
-        label.setPrefSize(width, height);
-        return label;
-    }
-
-    public ComboBox makeComboBox(String[] lis, Integer posX, Integer posY, Integer width, Integer height){
-        ComboBox combo_box = new ComboBox(FXCollections.observableArrayList(lis));
-        combo_box.getSelectionModel().selectFirst();
-        combo_box.relocate(posX, posY);
-        combo_box.setPrefSize(width,height);
-        return combo_box;
+        return searchList;
     }
 }

@@ -1,8 +1,7 @@
-
 package sample;
 
 public class Book {
-    protected long ISBN;
+    protected long ISBN13;
     protected String title;
     protected String author;
     protected String genre;
@@ -11,14 +10,14 @@ public class Book {
     protected int pages;
     protected float price;
     protected int inventory;
-    protected int min_inventory;
+    protected int minInventory;
 
     public Book() {
 
     }
 
-    public Book (long ISB, String a, String t, String g, String pn, float pc, float p, int num_pages, int inv, int min_inv) {
-        ISBN = ISB;
+    public Book (long ISBN, String a, String t, String g, String pn, float pc, float p, int num_pages, int inv) {
+        ISBN13 = ISBN;
         author = a;
         title = t;
         genre = g;
@@ -27,15 +26,18 @@ public class Book {
         price = p;
         pages = num_pages;
         inventory = inv;
-        min_inventory = min_inv;
     }
 
-    public long getISBN() {
-        return ISBN;
+    public Book (long ISBN, String a, String t, String g, String pn, float pc, float p, int num_pages, int inv, int minInv) {
+        ISBN13 = ISBN;
+        author = a;
+        title = t;
+        genre = g;
+        publisher_name = pn;
+        publisher_cut = pc;
+        price = p;
+        pages = num_pages;
+        inventory = inv;
+        minInventory = minInv;
     }
-
-    public String getTitle() {
-        return title;
-    }
-
 }
